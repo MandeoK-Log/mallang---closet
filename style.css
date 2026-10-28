@@ -498,8 +498,8 @@ kbd.wide { padding: 0 14px; }
    - 모서리: 3px 계단식으로 잘라 도트 느낌을 내요 (--notch)
    - 그림자: 바깥 그림자 대신 안쪽 밝은 줄/어두운 줄로 입체감
    ====================================================================== */
-@font-face { font-family: 'Galmuri11'; src: url('../fonts/Galmuri11.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Galmuri11'; src: url('../fonts/Galmuri11-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Galmuri11'; src: url('Galmuri11.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Galmuri11'; src: url('Galmuri11-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
 :root {
   --ink: #2f2321;
   --f-display: 'Galmuri11', 'DotGothic16', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>말랑 옷장</title>
+<meta name="description" content="해달·물범·북극여우·웜벳·햄스터에게 옷을 입히고, 미니게임으로 티켓을 모으는 픽셀 옷입히기 게임">
+<meta name="theme-color" content="#fdf1dd">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta property="og:title" content="말랑 옷장">
+<meta property="og:description" content="바닷가 친구들에게 옷을 입혀 주는 픽셀 게임">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
+<link rel="stylesheet" href="assets/css/style.css?v=4">
+</head>
+<body>
+<div id="app">
+  <header id="bar" hidden>
+    <button class="btn" id="btn-back" type="button">뒤로</button>
+    <h2 id="bar-title">말랑 옷장</h2>
+    <span class="lv" id="lv" title="레벨"><b id="lv-num">Lv.1</b><i><u id="lv-bar"></u></i></span>
+    <span class="coins tix" id="tix" title="코디 티켓"><span class="ic" id="tix-ic"></span><span id="tix-num">10</span><small id="tix-time"></small></span>
+    <span class="coins" id="coins" title="가진 조개"><span class="ic" id="coin-ic"></span><span id="coin-num">0</span></span>
+    <button class="btn icon-btn" id="btn-sound" type="button" aria-label="소리 끄기"></button>
+  </header>
+
+  <section class="screen" id="scr-title">
+    <div class="scene" id="scene">
+      <canvas class="px-bg" id="scene-cv" aria-hidden="true"></canvas>
+      <div class="critter cr-otter"><div class="mover" id="t-otter"></div></div>
+      <div class="critter cr-fox"><div class="mover" id="t-fox"></div></div>
+      <div class="critter cr-seal clap"><div class="mover" id="t-seal"></div></div>
+      <div class="critter cr-hamster"><div class="mover" id="t-hamster"></div></div>
+      <div class="critter cr-wombat" id="t-wombat-box"><div class="mover"><div class="flip" id="t-wombat"></div></div></div>
+      <div class="title-card">
+        <p class="eyebrow">바닷가 친구들 옷 입히기</p>
+        <h1 aria-label="말랑 옷장"><span>말</span><span>랑</span> <span>옷</span><span>장</span></h1>
+        <button class="btn btn-hot btn-big" id="btn-start" type="button">게임 시작</button>
+        <button class="btn btn-mint" id="btn-mini-title" type="button">미니게임으로 티켓 모으기</button>
+        <p class="save-line" id="save-line"></p>
+        <p class="hint">캐릭터가 일본어로 대답해요. 소리는 오른쪽 위 버튼으로 끌 수 있어요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-select" hidden>
+    <div class="select-wrap">
+      <p>친구마다 좋아하는 색과 옷이 달라요. 마음에 들면 높은 점수를, 싫으면 낮은 점수를 줘요.</p>
+      <button class="mini-banner" id="btn-mini-sel" type="button"><span class="mb-ic" data-icon="ticket"></span><span class="mb-tx"><b>미니게임</b><span id="mini-sel-sub">돌 피하기 · 파도 리듬으로 코디 티켓을 모아요</span></span><span class="mb-go">하러 가기</span></button>
+      <div class="cards" id="cards"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-dress" hidden>
+    <div class="dress">
+      <div class="stage" id="stage">
+        <canvas class="px-bg" id="stage-cv" aria-hidden="true"></canvas>
+        <div class="bubble" id="bubble" hidden><span class="jp" id="b-jp"></span><span class="kr" id="b-kr"></span></div>
+        <div class="chr-wrap" id="chr"></div>
+        <div class="fx" id="fx"></div>
+        <div class="stage-actions" id="stage-actions">
+          <button class="btn btn-hot btn-big" id="btn-judge" type="button">평가 받기</button>
+          <p class="judge-note"><span id="jn-text"></span> <button class="linkish strong" id="btn-mini3" type="button" hidden>미니게임으로 티켓 얻기</button></p>
+        </div>
+      </div>
+      <aside class="closet" id="closet">
+        <div class="result" id="result" hidden>
+          <div class="top"><div class="score"><span id="r-score">0</span><small>점</small></div><p class="verdict" id="r-verdict"></p></div>
+          <div class="meters">
+            <div class="meter"><span>색 조화</span><div class="track"><i id="m-h"></i></div><b id="v-h">0</b></div>
+            <div class="meter"><span>취향 저격</span><div class="track"><i id="m-t"></i></div><b id="v-t">0</b></div>
+            <div class="meter"><span>코디 밸런스</span><div class="track"><i id="m-b"></i></div><b id="v-b">0</b></div>
+          </div>
+          <p class="reward" id="r-reward" hidden>보상 <b id="r-coins">+0</b> 조개 · 경험치 <b class="xp" id="r-xp">+0</b> <span class="note" id="r-note"></span></p>
+          <div class="wait" id="r-wait"><i></i></div>
+          <div class="result-actions" id="r-actions" hidden>
+            <button class="btn btn-hot" id="btn-again" type="button">다시하기</button>
+            <button class="btn btn-mint" id="btn-rechar" type="button">캐릭터 재선택</button>
+            <button class="btn btn-lilac" id="btn-shop2" type="button">상점</button>
+          </div>
+        </div>
+        <dl class="taste" id="taste"></dl>
+        <div class="tabs" role="tablist" id="tabs"></div>
+        <div class="grid-wrap"><div class="grid" id="grid"></div></div>
+        <p class="closet-foot"><span id="foot-msg">잠긴 옷은 상점에서 조개로 열 수 있어요.</span> <button class="btn btn-lilac" id="btn-shop1" type="button">상점 가기</button> <button class="btn btn-mint" id="btn-mini1" type="button">미니게임</button></p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-mini" hidden>
+    <div class="mini-wrap">
+      <div id="mini-pick">
+        <p class="mini-lead">하늘에서 떨어지는 돌을 피하면서 <b>코디 티켓</b>과 <b>하트</b>를 주워요. 30초를 버틸 때마다 보너스 티켓도 1장씩 줘요. 친구마다 <b>하루에 한 번</b>씩, 다섯 친구로 하루 <b>5번</b>까지 할 수 있어요. 시작하면 그 친구의 오늘 기회를 써요.</p>
+        <p class="mini-keys">조작: 키보드 <kbd>←</kbd> <kbd>→</kbd> 또는 <kbd>A</kbd> <kbd>D</kbd> · 일시정지 <kbd>Space</kbd> · 휴대폰은 아래 버튼을 누르거나 화면을 손가락으로 끌어요</p>
+        <div class="cards" id="mini-cards"></div>
+      </div>
+      <div id="mini-play" hidden>
+        <div class="mini-hud"><span class="mh-life" id="mh-life"></span><span class="mh-tix" id="mh-tix"></span><span class="mh-time" id="mh-time">0초</span></div>
+        <div class="mini-box" id="mini-box">
+          <canvas id="mini-cv" aria-label="돌 피하기 게임 화면"></canvas>
+          <div class="mini-over" id="mini-over" hidden>
+            <p class="mo-title" id="mo-title">끝!</p>
+            <p class="mo-line" id="mo-line"></p>
+            <ul class="mo-sum" id="mo-sum"></ul>
+            <div class="mo-actions"><button class="btn btn-hot" id="mo-again" type="button">다른 친구로 하기</button><button class="btn btn-mint" id="mo-dress" type="button">옷 입히러 가기</button></div>
+          </div>
+        </div>
+        <div class="mini-pad">
+          <button class="btn pad" id="mp-l" type="button" aria-label="왼쪽으로"></button>
+          <button class="btn pad" id="mp-r" type="button" aria-label="오른쪽으로"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-games" hidden>
+    <div class="games-wrap">
+      <p class="games-lead">옷을 평가받으려면 코디 티켓이 필요해요. 미니게임으로 티켓을 더 모을 수 있어요.</p>
+      <div class="game-cards">
+        <button class="game-card" id="gc-dodge" type="button">
+          <span class="gc-art dodge" id="gc-dodge-art"></span>
+          <span class="gc-body"><b>돌 피하기</b><span>떨어지는 돌을 피하면서 티켓과 하트를 주워요. 친구마다 속도와 생명력이 달라요. 친구마다 하루 한 번씩, 하루 최대 5번.</span><em id="gc-dodge-sub"></em></span>
+          <span class="gc-keys"><kbd>←</kbd><kbd>→</kbd></span>
+        </button>
+        <button class="game-card" id="gc-rhythm" type="button">
+          <span class="gc-art rhythm" id="gc-rhythm-art"></span>
+          <span class="gc-body"><b>파도 리듬</b><span>박자에 맞춰 Q·W·E·스페이스를 눌러요. 점수가 오를수록 빨라지고, 점수 목표를 처음 넘길 때마다 티켓 1장. 횟수 제한 없음.</span><em id="gc-rhythm-sub"></em></span>
+          <span class="gc-keys"><kbd>Q</kbd><kbd>W</kbd><kbd>E</kbd><kbd class="wide">Space</kbd></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-rhythm" hidden>
+    <div class="mini-wrap">
+      <div id="rh-intro" class="rh-intro">
+        <div class="rh-how">
+          <h3>이렇게 해요</h3>
+          <p>위에서 내려오는 노트가 아래 선에 닿는 순간 맞는 키를 눌러요. 박자가 잘 맞을수록 점수가 커지고, 콤보가 이어지면 최대 3배까지 올라가요.</p>
+          <p class="keys-big"><kbd>Q</kbd><kbd>W</kbd><kbd>E</kbd><kbd class="wide">Space</kbd></p>
+          <p>시작할 때마다 노래 3곡 <b>파도타기 서프 · 조개껍데기 펑크 · 여름밤 디스코</b> 중 하나가 무작위로 나와요. 노트는 멜로디와 킥 드럼이 울리는 순간에 떨어져요.</p>
+          <p>노트를 놓치면 체력이 줄고, 15콤보마다 체력이 1칸 차요. 점수가 오를수록 레벨이 올라가서 박자가 빨라지고 노트가 많아져요. 체력이 0이 되면 끝나요.</p>
+          <p class="sm">한/영 키 상태와 상관없이 눌러져요. 일시정지는 <kbd>Esc</kbd>. 휴대폰에서는 아래 버튼 4개를 눌러요.</p>
+          <p class="rh-bestline">내 최고 점수 <b id="rh-best">0</b></p>
+          <button class="btn btn-hot btn-big" id="rh-start" type="button">시작하기</button>
+        </div>
+        <div class="rh-goalbox">
+          <h3>점수 목표 티켓</h3>
+          <p class="sm">목표마다 처음 넘었을 때 한 번만 티켓을 줘요.</p>
+          <ul class="rh-goals" id="rh-goals"></ul>
+          <p class="sm" id="rh-left"></p>
+        </div>
+      </div>
+      <div id="rh-play" hidden>
+        <div class="rh-layout">
+          <aside class="rh-side" aria-label="진행 상황">
+            <div class="rs-stage"><span class="rh-dancer-big" id="rh-dancer-big"></span></div>
+            <div class="rs-song"><span class="rs-note" aria-hidden="true"></span><span><b id="rs-song">곡 이름</b><small id="rs-mood"></small></span></div>
+            <div class="rs-row"><b id="rs-lv">LV 1</b><span id="rs-bpm">BPM 96</span></div>
+            <p class="rs-up" id="rs-up"></p>
+            <div class="rs-goal"><span class="rs-gl"><span data-icon="ticket"></span>다음 목표</span><b id="rs-next">2,000점</b></div>
+            <div class="rs-track"><i id="rs-bar"></i></div>
+            <div class="rs-row sm"><span>최고 점수</span><b id="rs-best">0</b></div>
+          </aside>
+          <div class="rh-main">
+            <div class="mini-hud rh-hud">
+              <span class="rh-dancer" id="rh-dancer"></span>
+              <span class="rh-meta"><span class="rh-lv" id="rh-lv">LV 1</span><span class="rh-hpbar"><i id="rh-hp"></i></span></span>
+              <span class="rh-score" id="rh-score">0</span>
+            </div>
+            <div class="mini-box rh-box">
+              <canvas id="rh-cv" aria-label="리듬게임 화면"></canvas>
+              <div class="mini-over" id="rh-over" hidden>
+                <p class="mo-title" id="rh-o-title">끝!</p>
+                <p class="rh-o-score" id="rh-o-score">0</p>
+                <ul class="mo-sum" id="rh-o-sum"></ul>
+                <p class="sm" id="rh-o-next"></p>
+                <div class="mo-actions"><button class="btn btn-hot" id="rh-again" type="button">다시 하기</button><button class="btn btn-mint" id="rh-list" type="button">미니게임 목록</button></div>
+              </div>
+            </div>
+            <div class="mini-pad rh-pads" id="rh-pads">
+              <button class="btn pad" type="button">Q</button><button class="btn pad" type="button">W</button><button class="btn pad" type="button">E</button><button class="btn pad" type="button">SPACE</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="scr-shop" hidden>
+    <div class="shop">
+      <p>칸마다 앞의 옷부터 하나씩 차례로 열려요. 뒤로 갈수록 비싸져요.</p>
+      <div class="progress"><span id="prog-text">0 / 0</span><div class="track"><i id="prog-bar" style="width:0"></i></div></div>
+      <div class="tabs" role="tablist" id="shop-tabs"></div>
+      <ul class="shop-list" id="shop-list"></ul>
+      <div class="shop-foot">
+        <span class="save-box"><span data-icon="disk"></span><span id="save-status">자동 저장됨</span></span>
+        <button class="btn btn-mint" id="btn-save-now" type="button">지금 저장</button>
+        <span id="reset-area"></span>
+      </div>
+    </div>
+  </section>
+</div>
+<div id="toast" hidden></div>
+
+<script src="assets/js/data.js?v=4"></script>
+<script src="assets/js/pixel.js?v=4"></script>
+<script src="assets/js/icons.js?v=4"></script>
+<script src="assets/js/scene.js?v=4"></script>
+<script src="assets/js/save.js?v=4"></script>
+<script src="assets/js/app.js?v=4"></script>
+<script src="assets/js/dodge.js?v=4"></script>
+<script src="assets/js/rhythm.js?v=4"></script>
+<script src="assets/js/main.js?v=4"></script>
+</body>
+</html>

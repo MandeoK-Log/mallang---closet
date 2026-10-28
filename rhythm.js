@@ -8,9 +8,10 @@ const LANES = [
   { code: 'KeyE', label: 'E', x: 172, w: 74, col: '#8cc8f0' },
   { code: 'Space', label: 'SPACE', x: 250, w: 94, col: '#f6cf5a' }
 ];
-const LV_AT = [0, 1500, 4000, 7500, 12000, 18000, 25000, 33000, 42000, 52000];
+const LV_AT = [0, 1650, 4400, 8250, 13200, 19800, 27500, 36300, 46200, 57200]; // 난이도 조정(-10%)
 const MILESTONES = [2000, 5000, 10000, 18000, 30000, 45000];
-const JUDGE = [{ name: 'PERFECT', win: 0.045, pts: 100, col: '#fff3a6' }, { name: 'GREAT', win: 0.09, pts: 70, col: '#a8f0d2' }, { name: 'GOOD', win: 0.135, pts: 40, col: '#bcdcff' }];
+// 난이도 조정(-10%): 판정 범위를 10% 넓혔어요
+const JUDGE = [{ name: 'PERFECT', win: 0.05, pts: 100, col: '#fff3a6' }, { name: 'GREAT', win: 0.1, pts: 70, col: '#a8f0d2' }, { name: 'GOOD', win: 0.15, pts: 40, col: '#bcdcff' }];
 /* ---------- 노래 3곡 (직접 작곡한 칩튠) ----------
    한 마디 = 16칸(16분음표). 멜로디 숫자는 lead 음에서 몇 반음 위인지, '.' 은 쉼표.
    노트(리듬 박스)는 이 멜로디와 킥 드럼이 실제로 울리는 칸에서만 만들어져요.
@@ -100,7 +101,7 @@ function startRhythm() {
   Object.assign(RG, {
     on: true, over: false, paused: false, score: 0, combo: 0, maxCombo: 0, hp: 10, level: 1,
     counts: { PERFECT: 0, GREAT: 0, GOOD: 0, MISS: 0 }, earned: 0, notes: [], fx: [], press: [0, 0, 0, 0],
-    song, bpm, speed: 330, step: 0, stepT: t0 + 4 * 60 / bpm, beatT: t0, beat: -4, lastLane: 1, lastPitch: null, lastNoteStep: -99,
+    song, bpm, speed: 300, step: 0, stepT: t0 + 4 * 60 / bpm, beatT: t0, beat: -4, lastLane: 1, lastPitch: null, lastNoteStep: -99,
     aq: [], judge: null, pop: null, flash: 0, startT: t0 + 4 * 60 / bpm, dancerBeat: 0, pauseAt: 0
   });
   const bus = rBus(); if (bus) { bus.master.gain.cancelScheduledValues(0); bus.master.gain.value = 0.9; bus.dly.delayTime.value = 45 / bpm; }
@@ -212,14 +213,14 @@ function laneFor(p) {
 function generate(upTo) {
   while (RG.stepT < upTo) {
     const lv = RG.level, step = RG.step, s16 = step % 16, t = RG.stepT;
-    if (s16 === 0) { RG.bpm = Math.min(RG.song.bpm + 36, RG.song.bpm + 4 * (lv - 1)); if (RG.bus) RG.bus.dly.delayTime.setValueAtTime(45 / RG.bpm, Math.max(0, audioAt(t) || 0)); }
+    if (s16 === 0) { RG.bpm = Math.min(RG.song.bpm + 32, RG.song.bpm + 3.6 * (lv - 1)); if (RG.bus) RG.bus.dly.delayTime.setValueAtTime(45 / RG.bpm, Math.max(0, audioAt(t) || 0)); }
     const p = queueStep(t, step);
     const sec = RG.song.arr[Math.floor(step / 64) % RG.song.arr.length];
     let take = false;
     if (p != null) {
       if (s16 % 4 === 0) take = true;
       else if (s16 % 2 === 0) take = lv >= 3 || (lv === 2 && Math.random() < 0.5);
-      else take = lv >= 5 || (lv === 4 && Math.random() < 0.5);
+      else take = (lv >= 5 && Math.random() < 0.85) || (lv === 4 && Math.random() < 0.4);
       if (lv <= 2 && step - RG.lastNoteStep < 2) take = false;
     }
     const downbeat = s16 === 0, kick = RG.song.drums[sec].k[s16] === 'x';
@@ -247,7 +248,7 @@ function rStep(t) {
   while (RG.beatT <= t + 0.6 && RG.beat < 0) { const hi = RG.beat === -1; RG.aq.push({ t: RG.beatT, play: at => { DRUM.h(at); voice(at, hi ? 1568 : 1046, 0.07, 'square', 0.05); } }); RG.beat++; RG.beatT += 60 / RG.bpm; }
   RG.aq.sort((a, b) => a.t - b.t);
   pumpAudio(t);
-  const target = 330 + 32 * (RG.level - 1);
+  const target = 300 + 29 * (RG.level - 1);
   RG.speed += (target - RG.speed) * 0.02;
   generate(t + (HIT_Y + 40) / RG.speed + 0.6);
   for (const n of RG.notes) {

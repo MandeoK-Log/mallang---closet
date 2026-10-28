@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <div id="app">
@@ -40,6 +40,7 @@
         <p class="eyebrow">바닷가 친구들 옷 입히기</p>
         <h1 aria-label="말랑 옷장"><span>말</span><span>랑</span> <span>옷</span><span>장</span></h1>
         <button class="btn btn-hot btn-big" id="btn-start" type="button">게임 시작</button>
+        <button class="btn btn-gold" id="btn-show-title" type="button">레드카펫 패션쇼</button>
         <button class="btn btn-mint" id="btn-mini-title" type="button">미니게임으로 티켓 모으기</button>
         <p class="save-line" id="save-line"></p>
         <p class="hint">캐릭터가 일본어로 대답해요. 소리는 오른쪽 위 버튼으로 끌 수 있어요.</p>
@@ -51,6 +52,7 @@
     <div class="select-wrap">
       <p>친구마다 좋아하는 색과 옷이 달라요. 마음에 들면 높은 점수를, 싫으면 낮은 점수를 줘요.</p>
       <button class="mini-banner" id="btn-mini-sel" type="button"><span class="mb-ic" data-icon="ticket"></span><span class="mb-tx"><b>미니게임</b><span id="mini-sel-sub">돌 피하기 · 파도 리듬으로 코디 티켓을 모아요</span></span><span class="mb-go">하러 가기</span></button>
+      <button class="mini-banner show-banner" id="btn-show-sel" type="button"><span class="mb-ic" data-icon="star"></span><span class="mb-tx"><b>레드카펫 패션쇼</b><span>제일 자신 있는 친구를 골라 강원 감자골 패션쇼에 나가요</span></span><span class="mb-go">출전하기</span></button>
       <div class="cards" id="cards"></div>
     </div>
   </section>
@@ -64,6 +66,7 @@
         <div class="fx" id="fx"></div>
         <div class="stage-actions" id="stage-actions">
           <button class="btn btn-hot btn-big" id="btn-judge" type="button">평가 받기</button>
+          <button class="btn btn-gold" id="btn-show-back" type="button" hidden>이 코디로 패션쇼 대기실 가기</button>
           <p class="judge-note"><span id="jn-text"></span> <button class="linkish strong" id="btn-mini3" type="button" hidden>미니게임으로 티켓 얻기</button></p>
         </div>
       </div>
@@ -191,6 +194,44 @@
     </div>
   </section>
 
+  <section class="screen" id="scr-show" hidden>
+    <div class="show-wrap">
+      <div id="show-lobby">
+        <p class="show-lead">가장 자신 있는 친구에게 옷을 입혀 레드카펫에 세워요. 참가자 10명 중 내 순서는 매번 무작위예요. 내 차례에는 <b>좌클릭/우클릭</b>(또는 <kbd>←</kbd> <kbd>→</kbd>)으로 균형을 잡으며 걸어요. 심사위원 4명이 0~10점씩 매겨서 합계로 순위를 정하고, 1등을 하면 다음 무대의 초대장을 받아요.</p>
+        <div class="show-stages" id="show-stages"></div>
+        <h4 class="show-h">심사위원</h4>
+        <div class="show-judges" id="show-judges"></div>
+        <h4 class="show-h">무대에 설 친구</h4>
+        <div class="show-chars" id="show-chars"></div>
+        <div class="show-go-row"><button class="btn btn-hot btn-big" id="show-go" type="button">참가하기</button><span id="show-go-note"></span></div>
+      </div>
+      <div id="show-stage" hidden>
+        <div class="show-layout">
+          <div class="show-main">
+            <div class="show-box" id="show-box">
+              <canvas id="show-cv" aria-label="레드카펫 패션쇼 무대"></canvas>
+              <div class="show-result" id="show-result" hidden>
+                <p class="sr-medal" id="sr-medal"></p>
+                <p class="mo-title" id="sr-title">결과</p>
+                <p class="sr-sub" id="sr-sub"></p>
+                <ol class="sr-top" id="sr-top"></ol>
+                <ul class="mo-sum" id="sr-mine"></ul>
+                <div class="invite" id="sr-invite" hidden>
+                  <div class="inv-env"><span class="inv-flap"></span></div>
+                  <div class="inv-card"><small>INVITATION</small><b>전국 패션 위크 초대장</b><span id="sr-invite-name"></span><em>스테이지 2가 열렸어요 · 무대는 준비 중(개발 중)이에요</em></div>
+                </div>
+                <div class="mo-actions"><button class="btn btn-hot" id="sr-again" type="button">대기실로</button><button class="btn btn-mint" id="sr-dress" type="button">옷장에서 코디 바꾸기</button></div>
+              </div>
+            </div>
+            <div class="show-ctrl"><button class="btn" id="show-speed" type="button">빨리 보기 ×2</button><button class="btn btn-lilac" id="show-skip" type="button" disabled>남은 무대 건너뛰기</button><span id="show-hint"></span></div>
+            <div class="show-pad" id="show-pad"><button class="btn pad" id="sp-l" type="button">◀ 왼쪽</button><button class="btn pad" id="sp-r" type="button">오른쪽 ▶</button></div>
+          </div>
+          <aside class="show-board"><h4 id="show-list-title">참가 순서</h4><ol class="show-list" id="show-list"></ol></aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="screen" id="scr-shop" hidden>
     <div class="shop">
       <p>칸마다 앞의 옷부터 하나씩 차례로 열려요. 뒤로 갈수록 비싸져요.</p>
@@ -207,14 +248,16 @@
 </div>
 <div id="toast" hidden></div>
 
-<script src="data.js?v=5"></script>
-<script src="pixel.js?v=5"></script>
-<script src="icons.js?v=5"></script>
-<script src="scene.js?v=5"></script>
-<script src="save.js?v=5"></script>
-<script src="app.js?v=5"></script>
-<script src="dodge.js?v=5"></script>
-<script src="rhythm.js?v=5"></script>
-<script src="main.js?v=5"></script>
+<script src="data.js?v=6"></script>
+<script src="pixel.js?v=6"></script>
+<script src="icons.js?v=6"></script>
+<script src="scene.js?v=6"></script>
+<script src="save.js?v=6"></script>
+<script src="app.js?v=6"></script>
+<script src="dodge.js?v=6"></script>
+<script src="rhythm.js?v=6"></script>
+<script src="cast.js?v=6"></script>
+<script src="show.js?v=6"></script>
+<script src="main.js?v=6"></script>
 </body>
 </html>

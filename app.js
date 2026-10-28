@@ -130,10 +130,10 @@ function drawTickets() {
   }
 }
 setInterval(() => { regen(); drawTickets(); }, 1000);
-const TITLES = { select: '누구에게 옷을 입혀 볼까?', shop: '조개 상점', mini: '돌 피하기', games: '미니게임', rhythm: '파도 리듬' };
+const TITLES = { select: '누구에게 옷을 입혀 볼까?', shop: '조개 상점', mini: '돌 피하기', games: '미니게임', rhythm: '파도 리듬', show: '레드카펫 패션쇼' };
 function show(name) {
   run.screen = name;
-  for (const s of ['title', 'select', 'dress', 'shop', 'mini', 'games', 'rhythm']) $('#scr-' + s).hidden = s !== name;
+  for (const s of ['title', 'select', 'dress', 'shop', 'mini', 'games', 'rhythm', 'show']) $('#scr-' + s).hidden = s !== name;
   $('#bar').hidden = name === 'title';
   $('#bar-title').textContent = name === 'dress' ? `${CHARS[run.cid].name}의 옷장` : TITLES[name] || '';
   $('#btn-back').textContent = name === 'select' ? '처음으로' : name === 'dress' ? '캐릭터 선택' : '돌아가기';
@@ -148,6 +148,7 @@ $('#btn-back').onclick = () => {
   else if (run.screen === 'dress') { if (!run.busy) openSelect(); }
   else if (run.screen === 'shop') run.cid ? openDress(run.cid) : openSelect();
   else if (run.screen === 'mini') miniBack();
+  else if (run.screen === 'show') showBack();
   else if (run.screen === 'games') gamesBack();
   else if (run.screen === 'rhythm') { if (RG.on && !RG.over && !$('#rh-play').hidden) endRhythm(); else if (!$('#rh-play').hidden) drawRhythmIntro(); else openGames(); }
 };
@@ -186,6 +187,9 @@ function unlockSpeech() {
 }
 document.addEventListener('pointerdown', () => { ac(); unlockSpeech(); }, { once: true });
 $('#btn-start').onclick = () => { ac(); unlockSpeech(); sfx.buy(); openSelect(); };
+$('#btn-show-title').onclick = () => { ac(); unlockSpeech(); sfx.buy(); openShow('title'); };
+$('#btn-show-sel').onclick = () => { sfx.pop(); openShow('select'); };
+$('#btn-show-back').onclick = () => { if (run.busy) return; sfx.pop(); openShow(); };
 $('#btn-mini-title').onclick = () => { ac(); unlockSpeech(); sfx.pop(); openGames('title'); };
 $('#btn-mini-sel').onclick = () => { sfx.pop(); openGames('select'); };
 $('#btn-mini1').onclick = () => { if (!run.busy) { sfx.pop(); openGames('dress'); } };
@@ -216,6 +220,7 @@ $('#gc-rhythm').onclick = () => { sfx.pop(); openRhythm('games'); };
 
 /* ---------- 캐릭터 선택 ---------- */
 function openSelect() {
+  run.showReturn = false;
   $('#cards').innerHTML = CHAR_ORDER.map(cid => {
     const c = CHARS[cid];
     return `<button class="card" type="button" data-c="${cid}">
@@ -240,6 +245,7 @@ function openDress(cid) {
   $('#taste').innerHTML = `<b>${c.name}의 취향</b><dt>좋아해</dt><dd>${c.likeText}</dd><dt class="no">싫어해</dt><dd>${c.dislikeText}</dd>`;
   resetStage();
   drawChar(); drawTabs(); drawGrid();
+  $('#btn-show-back').hidden = !run.showReturn;
   show('dress');
 }
 function drawChar() { $('#chr').innerHTML = renderChar(run.cid, run.outfit); }

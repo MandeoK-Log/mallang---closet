@@ -123,6 +123,8 @@ const ARMS = {
 };
 const armsOf = cid => ARMS[cid] || ARMS.def;
 const PINK = '#f49aa6', BLUSH = '#f6a9b0';
+/* 다른 파일(패션쇼 경쟁자 등)이 머리·꼬리 그리기를 추가할 수 있는 자리 */
+const EXTRA = { head: {}, tail: {} };
 
 function eye(P, x, y, kind = 'tall') {
   const K = '#231817';
@@ -136,6 +138,7 @@ function blush(P, x, y, w = 3) { for (let i = 0; i < w; i++) { P.set(x + i, y, B
 /* ----- 캐릭터 부위 ----- */
 function drawTail(P, cid) {
   const c = CHARS[cid];
+  if (EXTRA.tail[cid]) return EXTRA.tail[cid](P, c);
   if (cid === 'otter') P.fill(PG([[19, 51], [5, 57], [3, 60], [8, 61], [21, 56]]), shade(c.fur, -0.08));
   else if (cid === 'fox') {
     const t = PG([[36, 55], [45, 56], [51, 53], [55, 46], [55, 37], [52, 30], [48, 27], [46, 33], [47, 40], [44, 46], [38, 48]]);
@@ -146,15 +149,16 @@ function drawFeet(P, cid) {
   const c = CHARS[cid];
   for (const fx of FEET_X) {
     if (cid === 'seal') P.fill(E(fx + (fx < 28 ? -1 : 1), 59.5, 5.5, 2.6), c.fur);
-    else P.fill(E(fx, 58.5, 4.5, 3), cid === 'otter' || cid === 'wombat' ? shade(c.fur, -0.1) : c.fur);
+    else P.fill(E(fx, 58.5, 4.5, 3), c.feet || (cid === 'otter' || cid === 'wombat' ? shade(c.fur, -0.1) : c.fur));
     if (cid === 'hamster') P.dots([[Math.round(fx - 2), 60], [Math.round(fx), 60], [Math.round(fx + 1.5), 60]], PINK);
   }
 }
 function drawBody(P, cid) {
   const c = CHARS[cid];
-  const pat = cid === 'seal' ? (x, y) => ((x * 7 + y * 13) % 23 === 0 || (x * 5 + y * 3) % 29 === 0) ? '#a5b1bc' : null : null;
+  const pat = c.pat ? c.pat : cid === 'seal' ? (x, y) => ((x * 7 + y * 13) % 23 === 0 || (x * 5 + y * 3) % 29 === 0) ? '#a5b1bc' : null : null;
   P.fill(BODY(), c.fur, { pat });
-  if (cid === 'otter' || cid === 'wombat' || cid === 'hamster') P.patch(E(28, 47.5, 8, 7.5).and(E(28, 45, 11.3, 10.3)), (x, y) => (y > 51 && (x + y) % 2) ? shade(c.cream, -0.08) : c.cream);
+  if (c.chest) P.patch(PG([[20, 37], [28, 43], [36, 37], [36, 39.5], [28, 45.5], [20, 39.5]]), c.chest);
+  if (cid === 'otter' || cid === 'wombat' || cid === 'hamster' || c.belly) P.patch(E(28, 47.5, 8, 7.5).and(E(28, 45, 11.3, 10.3)), (x, y) => (y > 51 && (x + y) % 2) ? shade(c.cream, -0.08) : c.cream);
 }
 function drawArm(P, cid, i, top) {
   const c = CHARS[cid], [cx, cy, rx, ry, ang] = armsOf(cid)[i];
@@ -169,6 +173,7 @@ function drawArm(P, cid, i, top) {
 }
 function drawHead(P, cid) {
   const c = CHARS[cid], f = c.fur;
+  if (EXTRA.head[cid]) return EXTRA.head[cid](P, c);
   if (cid === 'otter') {
     for (const ex of [14, 42]) { P.fill(E(ex, 12.5, 3.2, 3.2), f); P.patch(E(ex, 12.5, 1.2, 1.2), shade(f, -0.35)); }
     const head = E(28, 21, 15.5, 13);

@@ -12,7 +12,8 @@ const TICKET_START = 10, TICKET_CAP = 10, TICKET_MS = 5 * 60 * 1000;
 const S = {
   coins: 0, owned: new Set(STARTER_IDS), seen: {}, best: {}, sound: true, plays: 0,
   tickets: TICKET_START, tickAt: Date.now(), mini: {}, rhythm: { best: 0, claimed: [] },
-  level: 1, xp: 0, createdAt: Date.now()
+  level: 1, xp: 0, createdAt: Date.now(),
+  show: { best: 0, wins: 0, plays: 0, invites: [] } // 패션쇼 기록 (최고 순위, 우승 횟수, 받은 초대장)
 };
 const outfits = {}; // 캐릭터별 마지막 코디
 const saveInfo = { ok: true, warned: false, at: 0, loaded: false };
@@ -26,7 +27,7 @@ function snapshot() {
     v: SAVE_VERSION, savedAt: Date.now(),
     coins: S.coins, owned: [...S.owned], seen: S.seen, best: S.best, sound: S.sound, plays: S.plays,
     outfits, tickets: S.tickets, tickAt: S.tickAt, mini: S.mini, rhythm: S.rhythm,
-    level: S.level, xp: S.xp, createdAt: S.createdAt
+    level: S.level, xp: S.xp, createdAt: S.createdAt, show: S.show
   };
 }
 function applySave(d) {
@@ -42,6 +43,8 @@ function applySave(d) {
   S.rhythm = { best: num(r.best), claimed: arr(r.claimed).filter(n => typeof n === 'number') };
   S.level = Math.max(1, Math.floor(num(d.level, 1))); S.xp = Math.max(0, num(d.xp));
   S.createdAt = num(d.createdAt, Date.now());
+  const sw = obj(d.show);
+  S.show = { best: num(sw.best), wins: num(sw.wins), plays: num(sw.plays), invites: arr(sw.invites).filter(x => typeof x === 'string') };
 }
 function readKey(k) {
   let raw = null;
